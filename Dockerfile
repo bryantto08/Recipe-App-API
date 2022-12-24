@@ -16,13 +16,13 @@ EXPOSE 8000
 # Then we remove tmp directory since its unnecessary
 # Then we call adduser command (simple user, not admin)
 # (not recommended to run app with root user if app gets compromised)
-
+# if statement is a shell command
 ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
-    then /py/bin/pip install -r requirements.dev.txt; \
+    then /py/bin/pip install -r /tmp/requirements.dev.txt; \
     fi && \
     rm -rf /tmp && \
     adduser \

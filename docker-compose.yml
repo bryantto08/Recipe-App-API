@@ -1,6 +1,7 @@
 version: "3.9"
 
 # app service: build it in current directory
+# volume: anything created inside container gets named to directory
 
 services:
   app:
