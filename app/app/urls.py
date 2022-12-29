@@ -23,7 +23,15 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),  # Generates a schema
-    path('api/docs', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-docs'),
-     # Generates a Swagger doc based on the schema ^
+    
+    # Generates a schema
+    path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
+
+    # Generates a Swagger doc based on the schema
+    path(
+        'api/docs',
+        SpectacularSwaggerView.as_view(url_name='api-schema'),
+        name='api-docs'
+          ),
+    
 ]

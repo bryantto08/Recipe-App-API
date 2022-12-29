@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as translate
 
 from core import models
 
+
 class UserAdmin(BaseUserAdmin):
     # Define the admin pages for users
     ordering = ["id"]
@@ -43,8 +44,9 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
+
 """
-Adds User Model to the Admin Page, we format it using our custom 
+Adds User Model to the Admin Page, we format it using our custom
 User Admin which we type as the second parameter, otherwise it would
 use Django's default useradmin which we said is "BaseUserAdmin"
 """
