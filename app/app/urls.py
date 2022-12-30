@@ -29,9 +29,9 @@ urlpatterns = [
 
     # Generates a Swagger doc based on the schema
     path(
-        'api/docs',
+        'api/docs/',
         SpectacularSwaggerView.as_view(url_name='api-schema'),
-        name='api-docs'
+        name='api-docs',
           ),
     path('api/user/', include('user.urls')),
 

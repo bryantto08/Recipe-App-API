@@ -15,6 +15,7 @@ class UserAdmin(BaseUserAdmin):
     # Supporting CRUD
     fieldsets = (
         (None,  {"fields": ("email", "password")}),
+        (translate("Personal Info"), {"fields": ("name",)}),
         (
             translate("Permissions"),
             {
@@ -40,7 +41,7 @@ class UserAdmin(BaseUserAdmin):
                 "is_active",
                 "is_staff",
                 "is_superuser",
-            )
+            ),
         }),
     )
 
