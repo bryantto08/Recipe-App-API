@@ -52,3 +52,4 @@ User Admin which we type as the second parameter, otherwise it would
 use Django's default useradmin which we said is "BaseUserAdmin"
 """
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Recipe)

@@ -1,5 +1,6 @@
 # Database models
 
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -42,3 +43,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()  # How to connect a Model Manager to a model
 
     USERNAME_FIELD = 'email'
+
+
+class Recipe(models.Model):  # models.Model is base Model Class
+    """Recipe Object."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Connect User Model to Recipe Model
+        on_delete=models.CASCADE,  # If User Delete, Delete the recipes linked
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    time_minutes = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):  # String Representation of recipe (to_string in java)
+        return self.title
