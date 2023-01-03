@@ -11,7 +11,7 @@ from recipe import views
 
 router = DefaultRouter()
 router.register("recipes", views.RecipeViewSet)  # Auto-generate endpoints for each options in viewset
-
+router.register("tags", views.TagViewSet)  # Auto-generated endpoint
 app_name = "recipe"
 
 urlpatterns = [

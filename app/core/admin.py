@@ -53,3 +53,4 @@ use Django's default useradmin which we said is "BaseUserAdmin"
 """
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Recipe)
+admin.site.register(models.Tag)
