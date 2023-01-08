@@ -20,6 +20,7 @@ class CreateTokenView(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
     rendered_classes = api_settings.DEFAULT_RENDERER_CLASSES  # Browsable API
 
+
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the Authenticated User"""
     serializer_class = UserSerializer

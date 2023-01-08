@@ -15,13 +15,16 @@ from recipe.serializers import TagSerializer
 
 TAGS_URL = reverse("recipe:tag-list")
 
+
 def detail_url(tag_id):
     """Create and return a tag detail url"""
     return reverse("recipe:tag-detail", args=[tag_id])
 
+
 def create_user(email="user@example.com", password="testpass123"):
     """Create and return a user"""
     return get_user_model().objects.create_user(email=email, password=password)
+
 
 class PublicTagsAPITests(TestCase):
     """Unauthenticated API requests"""
@@ -34,7 +37,6 @@ class PublicTagsAPITests(TestCase):
         res = self.client.get(TAGS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
 
 class PrivateTagAPITests(TestCase):
@@ -89,15 +91,15 @@ class PrivateTagAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         tags = Tag.objects.filter(user=self.user)
-        self.assertFalse(tags.exists())    
+        self.assertFalse(tags.exists())
 
     def test_filter_tags_assigned_to_recipes(self):
-        """Test listing tags by those assigned to recipes""" 
+        """Test listing tags by those assigned to recipes"""
         tag1 = Tag.objects.create(user=self.user, name="Breakfast")
         tag2 = Tag.objects.create(user=self.user, name="Lunch")
 
         recipe = Recipe.objects.create(
-            title= "Green Eggs on Toast",
+            title="Green Eggs on Toast",
             time_minutes=10,
             price=Decimal("4.50"),
             user=self.user
@@ -117,13 +119,13 @@ class PrivateTagAPITests(TestCase):
         tag = Tag.objects.create(user=self.user, name="Breakfast")
         Tag.objects.create(user=self.user, name="DInner")
         recipe1 = Recipe.objects.create(
-            title= "Pancakes",
+            title="Pancakes",
             time_minutes=10,
             price=Decimal("5.50"),
             user=self.user
         )
         recipe2 = Recipe.objects.create(
-            title= "Porridge",
+            title="Porridge",
             time_minutes=3,
             price=Decimal("2.50"),
             user=self.user

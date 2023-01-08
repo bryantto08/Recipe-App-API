@@ -9,8 +9,9 @@ from rest_framework.routers import DefaultRouter
 
 from recipe import views
 
+# Auto-generate endpoints for each options in viewset
 router = DefaultRouter()
-router.register("recipes", views.RecipeViewSet)  # Auto-generate endpoints for each options in viewset
+router.register("recipes", views.RecipeViewSet)
 router.register("tags", views.TagViewSet)  # Auto-generated endpoint
 router.register("ingredients", views.IngredientViewSet)
 app_name = "recipe"
@@ -18,4 +19,3 @@ app_name = "recipe"
 urlpatterns = [
     path("", include(router.urls)),
 ]
-

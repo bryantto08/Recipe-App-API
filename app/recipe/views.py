@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from core.models import Recipe, Tag, Ingredient
 from recipe import serializers
 
+
 # Making a Base Class for TagViewSet and Ingredients ViewSet
 @extend_schema_view(
     list=extend_schema(
@@ -37,7 +38,8 @@ class BaseRecipeAttrViewSet(mixins.UpdateModelMixin,
     authentication_classes = [TokenAuthentication]  # Supports Token Auth
     permission_classes = [IsAuthenticated]  # Need to be Auth to use API
 
-    def get_queryset(self): # Custom Method so we don't get recipes from other users
+    # Custom Method so we don't get recipes from other users
+    def get_queryset(self):
         """Retrieve Tags for authenticated user"""
         assigned_only = bool(
             int(self.request.query_params.get("assigned_only", 0))
@@ -50,9 +52,10 @@ class BaseRecipeAttrViewSet(mixins.UpdateModelMixin,
             user=self.request.user
         ).order_by("-name").distinct()
 
+
 @extend_schema_view(  # Extend auto-generated schema by drf spectacular
     list=extend_schema(
-        parameters = [
+        parameters=[
             OpenApiParameter(
                 "tags",
                 OpenApiTypes.STR,
@@ -77,9 +80,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Convert a list of strings to integers [1, 2, 3]"""
         return [int(str_id) for str_id in qs.split(",")]
 
-
-
-    def get_queryset(self):  # Custom Method So we don't get recipes from other users
+    # Custom Method So we don't get recipes from other users
+    def get_queryset(self):
         """Retrieve recipes for authenticated user"""
         tags = self.request.query_params.get("tags")
         ingredients = self.request.query_params.get("ingredients")
@@ -91,14 +93,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ingredient_ids = self._params_to_ints(ingredients)
             queryset = queryset.filter(ingredients__id__in=ingredient_ids)
 
-        return queryset.filter(  # Return the NEW queryset (only from current user)
+        # Return the NEW queryset (only from current user)
+        return queryset.filter(
             user=self.request.user
         ).order_by("-id").distinct()
 
     def get_serializer_class(self):  # Figuring out with serializer to use
         """Return the serializer class for request"""
         if self.action == "list":  # Default Action in viewset
-            return serializers.RecipeSerializer  # reference to class, NOT object
+            return serializers.RecipeSerializer  # reference to class
         elif self.action == "upload_image":   # Custom Action we create
             return serializers.RecipeImageSerializer
         return self.serializer_class
@@ -109,8 +112,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new recipe"""
         serializer.save(user=self.request.user)
-    
-    # Custom Action, only expect HTTP Post request, detail=True (specific object, not list)
+
+    """
+    Custom Action, only expect HTTP Post request,
+    detail=True (specific object, not list)
+    """
     @action(methods=["POST"], detail=True, url_path="upload-image")
     def upload_image(self, request, pk=None):
         """Upload an image to recipe"""
@@ -122,13 +128,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TagViewSet(BaseRecipeAttrViewSet):
     """Manage tags in the database"""
     serializer_class = serializers.TagSerializer
     queryset = Tag.objects.all()
 
+
 class IngredientViewSet(BaseRecipeAttrViewSet):
     """Manage Ingredients in the DB"""
     serializer_class = serializers.IngredientSerializer
     queryset = Ingredient.objects.all()
-

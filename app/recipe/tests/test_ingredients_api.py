@@ -16,13 +16,16 @@ from recipe.serializers import IngredientSerializer
 
 INGREDIENTS_URL = reverse("recipe:ingredient-list")
 
+
 def detail_url(ingredient_id):
     """Create and return a ingredient detail URL"""
     return reverse("recipe:ingredient-detail", args=[ingredient_id])
 
+
 def create_user(email="user@example.com", password="testpass123"):
     """Create and return a user"""
     return get_user_model().objects.create(email=email, password=password)
+
 
 class PublicIngredientsAPITests(TestCase):
     """Test unauthenticated API Requests"""
@@ -52,7 +55,7 @@ class PrivateIngredientsAPITests(TestCase):
         Ingredient.objects.create(user=self.user, name="Potato")
 
         res = self.client.get(INGREDIENTS_URL)
-        
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         ingredients = Ingredient.objects.all().order_by("-name")
@@ -77,7 +80,7 @@ class PrivateIngredientsAPITests(TestCase):
         """Test updating an ingredient"""
 
         ingredient = Ingredient.objects.create(user=self.user, name="Cilantro")
-        payload = {"name":"Potato"}
+        payload = {"name": "Potato"}
         url = detail_url(ingredient.id)
 
         res = self.client.patch(url, payload)
@@ -90,7 +93,7 @@ class PrivateIngredientsAPITests(TestCase):
         """Test Deleting an ingredient"""
 
         ingredient = Ingredient.objects.create(user=self.user, name="Apple")
-        
+
         url = detail_url(ingredient.id)
         res = self.client.delete(url)
 
@@ -99,12 +102,12 @@ class PrivateIngredientsAPITests(TestCase):
         self.assertFalse(ingredients.exists())
 
     def test_filter_ingredients_assigned_to_recipes(self):
-        """Test listing ingredients by those assigned to recipes""" 
+        """Test listing ingredients by those assigned to recipes"""
         in1 = Ingredient.objects.create(user=self.user, name="Apple")
         in2 = Ingredient.objects.create(user=self.user, name="Turkey")
 
         recipe = Recipe.objects.create(
-            title= "Apple Crumble",
+            title="Apple Crumble",
             time_minutes=5,
             price=Decimal("4.50"),
             user=self.user
@@ -128,7 +131,7 @@ class PrivateIngredientsAPITests(TestCase):
             time_minutes=60,
             price=Decimal("7.00"),
             user=self.user
-        ) 
+        )
         recipe2 = Recipe.objects.create(
             title="Herb Eggs",
             time_minutes=20,

@@ -22,13 +22,16 @@ from recipe.serializers import (
 
 RECIPES_URL = reverse("recipe:recipe-list")
 
+
 def detail_url(recipe_id):
     """Create and return a recipe detail URL"""
     return reverse("recipe:recipe-detail", args=[recipe_id])
 
+
 def image_upload_url(recipe_id):
     """CReate and return an image upload URL"""
     return reverse("recipe:recipe-upload-image", args=[recipe_id])
+
 
 def create_recipe(user, **params):
     defaults = {
@@ -39,10 +42,11 @@ def create_recipe(user, **params):
         "link": "http://example.com/recipe.pdf",
     }
     defaults.update(params)  # Built-In Dictionary Method, updates dict
-    
+
     # Create Recipe using model and dictionary
     recipe = Recipe.objects.create(user=user, **defaults)
     return recipe
+
 
 def create_user(**params):
     """Create and return a new user"""
@@ -66,7 +70,9 @@ class PrivateRecipeAPITests(TestCase):
     """Test Authenticated API Requests."""
     def setUp(self):
         self.client = APIClient()
-        self.user = create_user(email="user@example.com",password="testpass123")
+        self.user = create_user(
+            email="user@example.com",
+            password="testpass123")
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self):
@@ -83,7 +89,9 @@ class PrivateRecipeAPITests(TestCase):
 
     def test_recipe_list_limited_to_user(self):
         """Test list of recipes is limited to authenticated user"""
-        other_user = create_user(email="other@example.com", password="password123")
+        other_user = create_user(
+            email="other@example.com",
+            password="password123")
 
         # Create recipe for each user
         create_recipe(user=other_user)
@@ -92,7 +100,7 @@ class PrivateRecipeAPITests(TestCase):
         res = self.client.get(RECIPES_URL)  # calls api
 
         # filter recipes of only our user (not other_user)
-        recipes = Recipe.objects.filter(user=self.user) 
+        recipes = Recipe.objects.filter(user=self.user)
         serializer = RecipeSerializer(recipes, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -100,7 +108,7 @@ class PrivateRecipeAPITests(TestCase):
 
     def test_get_recipe_detail(self):
         """Test get recipe detail"""
-        recipe = create_recipe(user = self.user)
+        recipe = create_recipe(user=self.user)
 
         url = detail_url(recipe.id)
         res = self.client.get(url)
@@ -115,7 +123,7 @@ class PrivateRecipeAPITests(TestCase):
             "time_minutes": 30,
             "price": Decimal("5.99"),
         }
-        res = self.client.post(RECIPES_URL, payload) # /api/recipe/recipe
+        res = self.client.post(RECIPES_URL, payload)  # /api/recipe/recipe
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -123,7 +131,7 @@ class PrivateRecipeAPITests(TestCase):
         recipe = Recipe.objects.get(id=res.data["id"])
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
-        self.assertEqual(recipe.user, self.user)  # User in api matches 
+        self.assertEqual(recipe.user, self.user)  # User in api matches
 
     def test_partial_update(self):
         """Test partial update of a recipe"""
@@ -168,7 +176,7 @@ class PrivateRecipeAPITests(TestCase):
         self.assertEqual(recipe.user, self.user)
 
     def test_update_user_returns_error(self):
-        """Test chanign the recipe user results in an error"""
+        """Test changing the recipe user results in an error"""
         new_user = create_user(email="user2@example.com", password="reeeeeeee")
         recipe = create_recipe(user=self.user)
 
@@ -178,6 +186,7 @@ class PrivateRecipeAPITests(TestCase):
         res = self.client.patch(url, payload)
 
         recipe.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.user, self.user)
 
     def test_delete_recipe(self):
@@ -206,7 +215,7 @@ class PrivateRecipeAPITests(TestCase):
             "title": "Thai Prawn Curry",
             "time_minutes": 30,
             "price": Decimal("2.50"),
-            "tags": [{"name":"Thai"}, {"name":"Dinner"}]
+            "tags": [{"name": "Thai"}, {"name": "Dinner"}]
         }
         res = self.client.post(RECIPES_URL, payload, format="json")
 
@@ -229,7 +238,7 @@ class PrivateRecipeAPITests(TestCase):
             "title": "Pongal",
             "time_minutes": 60,
             "price": Decimal("4.50"),
-            "tags": [{"name":"Indian"}, {"name": "Breakfast"}]
+            "tags": [{"name": "Indian"}, {"name": "Breakfast"}]
         }
         res = self.client.post(RECIPES_URL, payload, format="json")
 
@@ -250,7 +259,7 @@ class PrivateRecipeAPITests(TestCase):
         """Test creating tag when updating a recipe."""
         recipe = create_recipe(user=self.user)
         payload = {
-            "tags": [{"name":"Lunch"}]
+            "tags": [{"name": "Lunch"}]
         }
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload, format="json")
@@ -317,7 +326,7 @@ class PrivateRecipeAPITests(TestCase):
             "title": "Vietnamese Soup",
             "time_minutes": 25,
             "price": "2.55",
-            "ingredients": [{"name": "Lemon"},{"name": "Fish Sauce"}]
+            "ingredients": [{"name": "Lemon"}, {"name": "Fish Sauce"}]
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -337,7 +346,7 @@ class PrivateRecipeAPITests(TestCase):
         """Test creating an ingredient when updating a recipe"""
         recipe = create_recipe(user=self.user)
         payload = {
-            "ingredients": [{"name":"Lemon"}]
+            "ingredients": [{"name": "Lemon"}]
         }
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload, format='json')
@@ -353,7 +362,7 @@ class PrivateRecipeAPITests(TestCase):
         recipe.ingredients.add(ingredient1)
 
         ingredient2 = Ingredient.objects.create(user=self.user, name="Chili")
-        payload = {"ingredients": [{"name":"Chili"}]}
+        payload = {"ingredients": [{"name": "Chili"}]}
 
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload, format='json')
@@ -428,9 +437,10 @@ class ImageUploadTests(TestCase):
         self.client.force_authenticate(self.user)
         self.recipe = create_recipe(user=self.user)
 
-    def tearDown(self):  # After every test, we "teardown" image after every test
+    # After every test, we "teardown" image after every test
+    def tearDown(self):
         self.recipe.image.delete()
-    
+
     def test_upload_image(self):
         """Test uploading an image to a recipe"""
         url = image_upload_url(self.recipe.id)
@@ -439,7 +449,7 @@ class ImageUploadTests(TestCase):
         NamedTemporaryFile: Helper Module by Python: Create a temp file
         as soon as the "with tempfile" ends it cleans up file automatically
         image_file: Image user is uploading (Video 125 for more info)
-        new_image_file: Image stored on the server stored on img 
+        new_image_file: Image stored on the server stored on img
         """
         with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
             img = Image.new("RGB", (10, 10))  # Creates basic test image

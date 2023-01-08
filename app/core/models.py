@@ -21,6 +21,7 @@ def recipe_image_file_path(instance, filename):
 
     return os.path.join("uploads", "recipe", filename)
 
+
 class UserManager(BaseUserManager):
     # Manager for Users
 
@@ -75,6 +76,7 @@ class Recipe(models.Model):  # models.Model is base Model Class
     def __str__(self):  # String Representation of recipe (to_string in java)
         return self.title
 
+
 class Tag(models.Model):
     """Tag Model"""
     user = models.ForeignKey(
@@ -85,6 +87,7 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Ingredient(models.Model):
     """Ingredient Model"""

@@ -14,6 +14,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
         read_only_fields = ["id"]
 
+
 class TagSerializer(serializers.ModelSerializer):
     """Serializer for Tags"""
     class Meta:
@@ -23,24 +24,29 @@ class TagSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id"]
 
+
 class RecipeSerializer(serializers.ModelSerializer):
     """Serializer for recipes"""
     # Nesting Serializers
-    tags = TagSerializer(many=True, required=False)  # List of Tags in Recipe Serializer
+    # List of Tags in Recipe Serializer
+    tags = TagSerializer(many=True, required=False)
     ingredients = IngredientSerializer(many=True, required=False)
+
     class Meta:
         model = Recipe
         fields = [
-            "id", "title", "time_minutes","price", "link", "tags", "ingredients", "image"
+            "id", "title", "time_minutes","price",
+            "link", "tags", "ingredients", "image"
         ]
         read_only_fields = ["id"]
-    
+
     def _get_or_create_tags(self, tags, recipe):  # Edited get_or_create
         """Handle getting or creating tags as needed"""
         auth_user = self.context["request"].user  # Getting Authenticated User
-        
+
         for tag in tags:
-            tag_obj, created = Tag.objects.get_or_create(  # Original get or create
+            # Original get or create
+            tag_obj, created = Tag.objects.get_or_create(
                 user=auth_user,
                 **tag,
             )
@@ -50,8 +56,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         """Handle getting or creating ingredients as needed"""
         auth_user = self.context["request"].user
 
-        for ingredient in ingredients: # Loop through ingredient
-            ingredient_obj, create = Ingredient.objects.get_or_create (
+        for ingredient in ingredients:  # Loop through ingredient
+            ingredient_obj, create = Ingredient.objects.get_or_create(
                 user=auth_user,  # Get or create an ingredient obj
                 **ingredient,
             )
@@ -65,14 +71,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         """Create a recipe."""
         """
         We want to remove tags from validated data because the tag attr in
-        recipes is a ManyToMany field meaning that it connects Tag Models to the Recipe
-        Model. Thus, we have to create the Tag Model First and then add it seperately
+        recipes is a ManyToMany field meaning that it connects Tag Models 
+        to the Recipe Model. Thus, we have to create the Tag Model First
+        and then add it seperately
         """
-        tags = validated_data.pop("tags", [])  # Remove tag data from validated data
-        ingredients = validated_data.pop("ingredients",[])
+        # Remove tag data from validated data
+        tags = validated_data.pop("tags", [])
+        ingredients = validated_data.pop("ingredients", [])
         recipe = Recipe.objects.create(**validated_data)
-        self._get_or_create_tags(tags, recipe) 
-        self._get_or_create_ingredients(ingredients, recipe) 
+        self._get_or_create_tags(tags, recipe)
+        self._get_or_create_ingredients(ingredients, recipe)
 
         return recipe
 
@@ -88,7 +96,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if tags is not None:
             instance.tags.clear()
             self._get_or_create_tags(tags, instance)
-        
+
         if ingredients is not None:
             instance.ingredients.clear()  # Clear all ingredients first
             # Add all ingredients saved in the ingredients variable
@@ -99,8 +107,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class RecipeDetailSerializer(RecipeSerializer):
-    """Serializer for recipe detail view which is an extension of 
+    """Serializer for recipe detail view which is an extension of
     Recipe Serializer which is why that is the base class
     """
 
@@ -116,4 +125,3 @@ class RecipeImageSerializer(serializers.ModelSerializer):
         fields = ["id", "image"]
         read_only_fields = ["id"]
         extra_kwargs = {"image": {"required": "True"}}
-    

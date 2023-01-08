@@ -8,6 +8,7 @@ from django.contrib.auth import (
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 
+
 # Serializers: Way to convert Input(JSON) to Python Object or Model
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user object."""
@@ -15,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ["email", "password", "name"]  # Fields that user can change
-        extra_kwargs = {"password" : { "write_only": True, "min_length": 5}}
+        extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
 
     def create(self, validated_data):
         """ Create and return a user with encrypted password."""
@@ -35,7 +36,7 @@ class AuthTokenSerializer(serializers.Serializer):
     """ Serializer for the user auth token"""
     email = serializers.EmailField()
     password = serializers.CharField(
-        style = {"input_type": "password"},
+        style={"input_type": "password"},
         trim_whitespace=False,
     )
 
@@ -43,7 +44,8 @@ class AuthTokenSerializer(serializers.Serializer):
         """valid and authenticate the user"""
         email = attrs.get("email")  # retrieve email and pass from view
         password = attrs.get("password")
-        user = authenticate(  # built in method; check if username and pass are correct
+        # built in method; check if username and pass are correct
+        user = authenticate(
             request=self.context.get("request"),
             username=email,
             password=password,
@@ -54,4 +56,3 @@ class AuthTokenSerializer(serializers.Serializer):
             # View will translate this into HTTP 400 response ^
         attrs["user"] = user
         return attrs
-
