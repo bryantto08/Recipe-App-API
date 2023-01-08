@@ -35,7 +35,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = [
-            "id", "title", "time_minutes","price",
+            "id", "title", "time_minutes", "price",
             "link", "tags", "ingredients", "image"
         ]
         read_only_fields = ["id"]
@@ -71,7 +71,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         """Create a recipe."""
         """
         We want to remove tags from validated data because the tag attr in
-        recipes is a ManyToMany field meaning that it connects Tag Models 
+        recipes is a ManyToMany field meaning that it connects Tag Models
         to the Recipe Model. Thus, we have to create the Tag Model First
         and then add it seperately
         """
